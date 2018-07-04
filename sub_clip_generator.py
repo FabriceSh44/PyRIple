@@ -1,6 +1,7 @@
 from moviepy.editor import concatenate_videoclips
 from datetime import timedelta, datetime
-from PIL import Image
+import subprocess
+import os
 
 
 def get_sub_clip(res, time, duration_sec):
@@ -9,9 +10,15 @@ def get_sub_clip(res, time, duration_sec):
         if absolute_time - timedelta(
                 seconds=duration_sec) > clip.absolute_start_time and absolute_time < clip.absolute_end_time:
             end_time = (absolute_time - clip.absolute_start_time).seconds
-            res.show_frame(clip.video_clip, (end_time - duration_sec) / 2)
-            input_str = input('Pic ok ? (Y/n)')
-            return clip.video_clip.subclip(end_time - duration_sec, end_time) if input_str == 'Y' else None
+            cur_sub_clip = clip.video_clip.subclip(end_time - duration_sec, end_time)
+            show_clip(clip.video_clip.subclip(end_time - duration_sec/4, end_time))
+            input_str = input('clip ok ? (Y/n)')
+            if input_str.upper() == 'Y':
+                print('Adding sub clip')
+                return cur_sub_clip
+            else:
+                print('Skipping sub clip')
+                return None
     print('cross clip not supported yet')
     return None
 
@@ -22,8 +29,7 @@ def generate(concatenated_result, times):
     final_clip.write_videofile(concatenated_result.file_path)
 
 
-def show_frame(clip, time_sec):
-    file_name = 'rsrc/temp.jpg'
-    clip.save_frame(file_name, time_sec)
-    image = Image.open(file_name)
-    image.show()
+def show_clip(clip):
+    file_name = os.path.abspath('rsrc/temp.mp4')
+    clip.write_videofile(file_name)
+    subprocess.call('open {}'.format(file_name), shell=True)
