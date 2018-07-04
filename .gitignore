@@ -1,0 +1,6 @@
+#directory
+.idea/
+rsrc/
+
+#file
+.DS_Store
