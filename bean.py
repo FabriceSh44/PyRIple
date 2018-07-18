@@ -17,8 +17,8 @@ class VideoClipTimeStamped:
 
 
 class ConcatenatedResult:
-    def __init__(self, file_path):
-        self.file_path = file_path
+    def __init__(self, output_folder):
+        self.output_folder = output_folder
         self.clip_list = []
         self.absolute_start_time = None
         self.absolute_end_time = None
@@ -31,6 +31,6 @@ class ConcatenatedResult:
 
 
     def __str__(self) -> str:
-        return 'CR: {} st:{} et:{} dur:{:2.2f}min'.format(self.file_path, self.absolute_start_time.strftime('%H:%M:%S'),
+        return 'CR: {} st:{} et:{} dur:{:2.2f}min'.format(self.output_folder, self.absolute_start_time.strftime('%H:%M:%S'),
                                                    self.absolute_end_time.strftime('%H:%M:%S'),
                                                    sum(map(lambda x: x.video_clip.duration, self.clip_list))/60)

@@ -1,6 +1,7 @@
 #directory
 .idea/
 rsrc/
+__pycache__/
 
 #file
 .DS_Store
