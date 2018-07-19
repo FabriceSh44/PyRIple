@@ -7,7 +7,7 @@ def retrieve(working_folder):
     if not os.path.exists(time_file):
         raise FileNotFoundError("Unable to find {}".format(time_file))
     delta_time_str_list = [x.split(',')[1] for x in open(time_file)][1:]
-    delta_time_datetime_list = [datetime.strptime(x, "%M:%S.%f") for x in delta_time_str_list if x != '']
+    delta_time_datetime_list = [datetime.strptime(x, "%H:%M:%S") for x in delta_time_str_list if x != '']
     timedelta_total = timedelta()
     time_delta_list = []
     for cur_dt in delta_time_datetime_list:

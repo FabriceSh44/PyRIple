@@ -6,7 +6,7 @@ from datetime import timedelta
 def generate_clip_list(working_folder):
     print('Getting clip list...')
     clip_list = []
-    for root, dirs, files in os.walk(working_folder, "input"):
+    for root, dirs, files in os.walk(working_folder):
         for file in files:
             if 'MP4' in file:
                 clip_list.append(VideoClipTimeStamped(os.path.join(root, file)))
@@ -31,11 +31,9 @@ def generate_concatenaded_file(working_folder, result):
 
 
 def process(working_folder):
-    output_folder = os.path.join(working_folder, 'output')
-    if not os.path.exists(output_folder):
-        os.mkdir(output_folder)
+
     print('Working in folder {}'.format(working_folder))
-    result = ConcatenatedResult(output_folder)
+    result = ConcatenatedResult(working_folder)
     generate_concatenaded_file(working_folder, result)
     print('Got {} result'.format(result))
     return result

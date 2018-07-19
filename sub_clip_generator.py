@@ -10,7 +10,7 @@ def get_sub_clip(res, time_delta, duration_sec, force_add):
         if absolute_time - timedelta(
                 seconds=duration_sec) > clip.absolute_start_time and absolute_time < clip.absolute_end_time:
             end_time = (absolute_time - clip.absolute_start_time).seconds
-            cur_sub_clip = clip.video_clip.subclip(end_time - duration_sec, end_time)
+            cur_sub_clip = clip.video_clip.subclip(end_time - duration_sec, end_time + 3)
             if force_add:
                 print('Adding sub clip at {}'.format(absolute_time))
                 return [time_delta, cur_sub_clip]
@@ -26,7 +26,7 @@ def get_sub_clip(res, time_delta, duration_sec, force_add):
     return None
 
 
-def generate(concatenated_result, times, go_pro_folder):
+def generate(concatenated_result, times, go_pro_folder, output_folder):
     sub_clip_list = [get_sub_clip(concatenated_result, x, duration_sec=10, force_add=True) for x in times]
     for sub_clip in sub_clip_list:
         seconds = sub_clip[0].seconds
@@ -35,7 +35,7 @@ def generate(concatenated_result, times, go_pro_folder):
         minutes = seconds // 60
         seconds = seconds - (minutes * 60)
         sub_clip[1].write_videofile(
-            os.path.join(concatenated_result.output_folder, '{}h{}m{}s_{}.mp4'.format(hours, minutes, seconds, go_pro_folder)))
+            os.path.join(output_folder, '{}h{}m{}s_{}.mp4'.format(hours, minutes, seconds, go_pro_folder)))
 
         # final_clip = concatenate_videoclips([x for x in sub_clip_list if x is not None])
         # final_clip.write_videofile(concatenated_result.file_path)
