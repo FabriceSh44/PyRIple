@@ -20,6 +20,13 @@ print("Working folder is {}".format(working_folder))
 print("Input folder is {}".format(input_folder))
 print("Output folder is {}".format(output_folder))
 
+print("Checking folders..")
+if not os.path.exists(input_folder):
+    raise FileNotFoundError("No folder {} found. Please put your videos under input/GOPRO1 folder")
+
+if not os.path.exists(output_folder):
+    os.mkdir(output_folder)
+
 if results.generate_sub_clip:
     times = time_retriever.retrieve(working_folder)
     for root, go_pro_folders, files in os.walk(os.path.join(input_folder)):
