@@ -18,7 +18,7 @@ def squash_time_delta(time_delta_list, duration_mini_clip):
             cursor += 1
         cur_time_delta[1] = timedelta(seconds=time_delta_list[cursor].seconds + duration_mini_clip * (1-fraction_duration))
         time_interval_list.append(cur_time_delta)
-        print('{}{} into:{}'.format(message, str(time_delta_list[cursor]), '{}->{}'.format(str(cur_time_delta[0]), str(cur_time_delta[1]))))
+        print('{}{} into:{}'.format(message, str(time_delta_list[cursor]), '[{};{}]'.format(str(cur_time_delta[0]), str(cur_time_delta[1]))))
         cursor += 1
     print('Found {} intervals'.format(len(time_interval_list)))
     return time_interval_list

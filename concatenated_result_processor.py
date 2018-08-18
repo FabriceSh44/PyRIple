@@ -33,7 +33,6 @@ def generate_concatenaded_file(go_pro_folder, result):
 
 
 def process(working_folder):
-    print('Working in folder {}'.format(working_folder))
     result = ConcatenatedResult(working_folder)
     generate_concatenaded_file(working_folder, result)
     print('Got {} result'.format(result))
