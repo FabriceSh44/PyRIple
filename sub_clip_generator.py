@@ -4,17 +4,18 @@ import subprocess
 import os
 
 
-def get_sub_clip(res, time_delta, duration_sec, force_add):
-    absolute_time = res.absolute_start_time + time_delta
+def get_sub_clip(res, time_delta, force_add):
+    absolute_time_st = res.absolute_start_time + time_delta[0]
+    absolute_time_et = res.absolute_start_time + time_delta[1]
     for clip in res.clip_list:
-        if absolute_time - timedelta(
-                seconds=duration_sec) > clip.absolute_start_time and absolute_time < clip.absolute_end_time:
-            end_time = (absolute_time - clip.absolute_start_time).seconds
-            cur_sub_clip = clip.video_clip.subclip(end_time - duration_sec, end_time + 3)
+        if absolute_time_st > clip.absolute_start_time and absolute_time_et < clip.absolute_end_time:
+            start_time = (absolute_time_st - clip.absolute_start_time).seconds
+            end_time = (absolute_time_et - clip.absolute_start_time).seconds
+            cur_sub_clip = clip.video_clip.subclip(start_time, end_time)
             if force_add:
-                print('Adding sub clip at {}'.format(absolute_time))
+                print('Adding sub clip at {}'.format(start_time))
                 return [time_delta, cur_sub_clip]
-            show_clip(clip.video_clip.subclip(end_time - duration_sec / 4, end_time))
+            show_clip(clip.video_clip.subclip(end_time - 10 / 4, end_time))
             input_str = input('clip ok ? (Y/n)')
             if input_str.upper() == 'Y':
                 print('Adding sub clip')
@@ -27,7 +28,7 @@ def get_sub_clip(res, time_delta, duration_sec, force_add):
 
 
 def generate(concatenated_result, times, go_pro_folder, output_folder):
-    sub_clip_list = [get_sub_clip(concatenated_result, x, duration_sec=10, force_add=True) for x in times]
+    sub_clip_list = [get_sub_clip(concatenated_result, x, force_add=True) for x in times]
     for sub_clip in sub_clip_list:
         if sub_clip is not None:
             seconds = sub_clip[0].seconds

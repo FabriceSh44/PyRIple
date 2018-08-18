@@ -6,9 +6,10 @@ from moviepy.editor import VideoFileClip,concatenate_videoclips
 
 parser = argparse.ArgumentParser(description='Processor of go pro video')
 
-parser.add_argument('-gsc', "--generate_sub_clip", action='store_true')
-parser.add_argument('-csc', "--concatenate_sub_clip", action='store_true')
+parser.add_argument('-gsc', "--generate_sub_clip", action='store_true', help='first step : generate a list of subclip')
+parser.add_argument('-csc', "--concatenate_sub_clip", action='store_true', help='second step : concatenate list of subclip')
 parser.add_argument('-wf', "--working_folder", required=True)
+parser.add_argument('-dmc', "--duration_mini_clip",  default=15, help='duration in sec of a subclip')
 results = parser.parse_args()
 
 
@@ -19,16 +20,17 @@ input_folder = os.path.join(working_folder, 'input')
 print("Working folder is {}".format(working_folder))
 print("Input folder is {}".format(input_folder))
 print("Output folder is {}".format(output_folder))
+print("Duration mini clip is {}sec".format(results.duration_mini_clip))
 
 print("Checking folders..")
 if not os.path.exists(input_folder):
-    raise FileNotFoundError("No folder {} found. Please put your videos under input/GOPRO1 folder")
+    raise FileNotFoundError("No folder {} found. Please put your videos under input/GOPRO folder")
 
 if not os.path.exists(output_folder):
     os.mkdir(output_folder)
 
 if results.generate_sub_clip:
-    times = time_retriever.retrieve(working_folder)
+    times = time_retriever.retrieve(working_folder, results.duration_mini_clip)
     for root, go_pro_folders, files in os.walk(os.path.join(input_folder)):
         for go_pro_folder in go_pro_folders:
             concatenated_result = concatenated_result_processor.process(os.path.join(root, go_pro_folder))
