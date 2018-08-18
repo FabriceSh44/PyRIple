@@ -16,7 +16,7 @@ def get_sub_clip(res, time_delta):
     cur_video = res.clip_list[cursor]
 
     # get correct video for start of interval
-    while cur_video.absolute_start_time < absolute_time_st :
+    while cur_video.absolute_start_time < absolute_time_st:
         if cursor + 1 == len(res.clip_list):
             cursor += 1
             break
@@ -42,7 +42,7 @@ def get_sub_clip(res, time_delta):
         print('Cross clip found. 2 subclips generated')
         end_time = (absolute_time_et - cur_video.absolute_start_time).seconds
         cur_sub_clip = cur_video.video_clip.subclip(0, end_time)
-        sub_clip_list.append([cur_video.absolute_start_time, cur_sub_clip])
+        sub_clip_list.append([[cur_video.absolute_start_time, end_time], cur_sub_clip])
         return sub_clip_list
     else:
         raise ValueError('That\'s weird, it means that the subclip is bigger than an entire video (~17min)')
