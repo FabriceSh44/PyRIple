@@ -31,7 +31,7 @@ def generate(concatenated_result, times, go_pro_folder, output_folder):
     sub_clip_list = [get_sub_clip(concatenated_result, x, force_add=True) for x in times]
     for sub_clip in sub_clip_list:
         if sub_clip is not None:
-            seconds = sub_clip[0].seconds
+            seconds = sub_clip[0][0].seconds
             hours = seconds // 3600
             seconds = seconds - (hours * 3600)
             minutes = seconds // 60
