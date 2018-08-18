@@ -28,16 +28,16 @@ def get_sub_clip(res, time_delta, force_add):
 
 
 def generate(concatenated_result, times, go_pro_folder, output_folder):
-    sub_clip_list = [get_sub_clip(concatenated_result, x, force_add=True) for x in times]
+    sub_clip_list = [x for x in [get_sub_clip(concatenated_result, x, force_add=True) for x in times] if x is not None]
+    print('Found {} sub clips'.format(len(sub_clip_list)))
     for sub_clip in sub_clip_list:
-        if sub_clip is not None:
-            seconds = sub_clip[0][0].seconds
-            hours = seconds // 3600
-            seconds = seconds - (hours * 3600)
-            minutes = seconds // 60
-            seconds = seconds - (minutes * 60)
-            sub_clip[1].write_videofile(
-                os.path.join(output_folder, '{0:02d}h{1:02d}m{2:02d}s_{3}.mp4'.format(hours, minutes, seconds, go_pro_folder)))
+        seconds = sub_clip[0][0].seconds
+        hours = seconds // 3600
+        seconds = seconds - (hours * 3600)
+        minutes = seconds // 60
+        seconds = seconds - (minutes * 60)
+        sub_clip[1].write_videofile(
+            os.path.join(output_folder, '{0:02d}h{1:02d}m{2:02d}s_{3}.mp4'.format(hours, minutes, seconds, go_pro_folder)))
 
 
 def show_clip(clip):

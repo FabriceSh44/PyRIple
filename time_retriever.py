@@ -3,16 +3,24 @@ from datetime import datetime, timedelta
 
 
 def squash_time_delta(time_delta_list, duration_mini_clip):
+    print('Squashing time into intervals..')
     time_interval_list = []
+    fraction_duration = 2 / 3  # if 15 sec duration, interval get 10 sec before and 5 sec after the tick
     cursor = 0
     while cursor < len(time_delta_list):
-        cur_time_delta = [timedelta(seconds=time_delta_list[cursor].seconds - duration_mini_clip * 2 / 3), None]
-        while cursor+1 < len(time_delta_list) \
+        message = 'Transformed: '
+        cur_time_delta = [timedelta(seconds=time_delta_list[cursor].seconds - duration_mini_clip * fraction_duration
+                                    ), None]
+        while cursor + 1 < len(time_delta_list) \
                 and time_delta_list[cursor].seconds + duration_mini_clip >= time_delta_list[cursor + 1].seconds:
+            #found another tick in duration => concatenate
+            message += str(time_delta_list[cursor]) + " + "
             cursor += 1
-        cur_time_delta[1] = timedelta(seconds=time_delta_list[cursor].seconds + duration_mini_clip * 1 / 3)
+        cur_time_delta[1] = timedelta(seconds=time_delta_list[cursor].seconds + duration_mini_clip * (1-fraction_duration))
         time_interval_list.append(cur_time_delta)
+        print('{}{} into:{}'.format(message, str(time_delta_list[cursor]), '{}->{}'.format(str(cur_time_delta[0]), str(cur_time_delta[1]))))
         cursor += 1
+    print('Found {} intervals'.format(len(time_interval_list)))
     return time_interval_list
 
 
@@ -20,6 +28,7 @@ def retrieve(working_folder, duration_mini_clip):
     time_file = os.path.join(working_folder, "time_data.csv")
     if not os.path.exists(time_file):
         raise FileNotFoundError("Unable to find {}".format(time_file))
+    print('Retrieving time in {}'.format(time_file))
     delta_time_str_list = [x.split(',')[1] for x in open(time_file)][1:]
     for fmt in ["%H:%M:%S", "%H:%M:%S.%f"]:
         try:
