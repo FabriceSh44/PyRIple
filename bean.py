@@ -1,6 +1,7 @@
 import os
 from datetime import timedelta, datetime
 from moviepy.editor import VideoFileClip
+import time_tools
 
 
 class VideoClipTimeStamped:
@@ -11,9 +12,9 @@ class VideoClipTimeStamped:
         self.absolute_end_time = self.absolute_start_time + timedelta(seconds=self.video_clip.duration)
 
     def __str__(self) -> str:
-        return 'VCTS: {} st:{} et:{} dur:{:2.2f}min'.format(self.file_path, self.absolute_start_time.strftime('%H:%M:%S'),
+        return 'VCTS: {} st:{} et:{} dur:{}min'.format(self.file_path, self.absolute_start_time.strftime('%H:%M:%S'),
                                                      self.absolute_end_time.strftime('%H:%M:%S'),
-                                                     self.video_clip.duration/60)
+                                                     time_tools.second_to_string(self.video_clip.duration))
 
 
 class ConcatenatedResult:

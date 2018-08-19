@@ -1,7 +1,7 @@
-from moviepy.editor import concatenate_videoclips
 from datetime import timedelta, datetime
 import subprocess
 import os
+from time_tools import relative_to_string, second_to_string
 
 
 def get_sub_clip(res, time_delta):
@@ -28,21 +28,34 @@ def get_sub_clip(res, time_delta):
     start_time = (absolute_time_st - cur_video.absolute_start_time).seconds
     # easy case : start time and end time are within the same video
     if absolute_time_et < cur_video.absolute_end_time:
-        end_time = (absolute_time_et - cur_video.absolute_start_time).seconds
-        cur_sub_clip = cur_video.video_clip.subclip(start_time, end_time)
+        duration_second = (absolute_time_et - cur_video.absolute_start_time).seconds
+        cur_sub_clip = cur_video.video_clip.subclip(start_time, duration_second)
+        print('Video {} for interval {}=>{}'.format(os.path.basename(cur_video.file_path),
+            relative_to_string(cur_video.absolute_start_time, absolute_time_st),
+            relative_to_string(cur_video.absolute_start_time, absolute_time_et)))
         return [[time_delta, cur_sub_clip]]
 
-    sub_clip_list = [[time_delta[0], cur_video.absolute_end_time], cur_video.video_clip.subclip(start_time)]
+    new_end_time = time_delta[0] + timedelta(seconds=(cur_video.absolute_end_time - absolute_time_st).seconds)
+    sub_clip_list = [[[time_delta[0], new_end_time], cur_video.video_clip.subclip(start_time)]]
     if cursor + 1 == len(res.clip_list):
         # interval is off recorded video
+        print('Cut off video {} for interval {}=>{}'.format(os.path.basename(cur_video.file_path),
+              relative_to_string(cur_video.absolute_start_time, absolute_time_st),
+              second_to_string(cur_video.video_clip.duration)))
         return sub_clip_list
+    print('Video {} for interval {}=>{}'.format(os.path.basename(cur_video.file_path),
+              relative_to_string(cur_video.absolute_start_time, absolute_time_st),
+              second_to_string(cur_video.video_clip.duration)))
     cursor += 1
     cur_video = res.clip_list[cursor]
     if absolute_time_et < cur_video.absolute_end_time:
-        print('Cross clip found. 2 subclips generated')
-        end_time = (absolute_time_et - cur_video.absolute_start_time).seconds
-        cur_sub_clip = cur_video.video_clip.subclip(0, end_time)
-        sub_clip_list.append([[cur_video.absolute_start_time, end_time], cur_sub_clip])
+        duration_second = (absolute_time_et - cur_video.absolute_start_time).seconds
+        cur_sub_clip = cur_video.video_clip.subclip(0, duration_second)
+        new_start_time = time_delta[1] - timedelta(seconds=duration_second)
+        print('Second video {} for interval {}=>{}'.format(os.path.basename(cur_video.file_path),
+                                                           second_to_string(0),
+                                                           second_to_string(duration_second)))
+        sub_clip_list.append([[new_start_time, time_delta[1]], cur_sub_clip])
         return sub_clip_list
     else:
         raise ValueError('That\'s weird, it means that the subclip is bigger than an entire video (~17min)')
@@ -54,7 +67,6 @@ def generate(concatenated_result, times, go_pro_folder, output_folder):
     for time_interval in times:
         sub_clip_list += get_sub_clip(concatenated_result, time_interval)
 
-    # sub_clip_list = [x for x in [get_sub_clip(concatenated_result, x, force_add=True) for x in times] if x is not None]
     print('Found {} sub clips'.format(len(sub_clip_list)))
     for sub_clip in sub_clip_list:
         seconds = sub_clip[0][0].seconds
